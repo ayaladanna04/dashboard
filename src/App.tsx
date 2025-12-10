@@ -1,92 +1,105 @@
 
 import './App.css'
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import IndicatorUI from './components/IndicatorUI';
 import useFetchData from './functions/useFetchData';
 import HeaderUI from './components/HeaderUI';
 import AlertUI from './components/AlertUI';
 import SelectorUI from './components/SelectorUI';
+import TableUI from './components/TableUI';
+import ChartUI from './components/ChartUI';
+
 function App() {
-    const dataFetcherOutput = useFetchData();
+    const { data, loading, error } = useFetchData();
+
 
     return (
-        <Grid>
-
+        <Grid container spacing={2} sx={{ p: 2 }}>
             {/* Encabezado */}
-            <Grid container spacing={5} justifyContent="center" alignItems="center">
-            <HeaderUI />
+            <Grid size={12}>
+                <HeaderUI />
             </Grid>
-            {/* Alertas */}
-            <Grid
-                container
-                justifyContent="right"
-                alignItems="center"
-            >
+
+            {/* Alerta */}
+            <Grid size={{ xs: 12, md: 9 }} container justifyContent="flex-end" alignItems="center">
                 <AlertUI
                     description="No se preveen lluvias"
                     variant="filled"
                     severity="info"
                 />
             </Grid>
+
             {/* Selector */}
-                {/* Selector */}
-                <Grid size={{ xs: 12, md: 3 }}>
-                    <SelectorUI />
+            <Grid size={{ xs: 12, md: 3 }} >
+                <SelectorUI />
+            </Grid>
+            {/* Manejo de carga y errores */}
+            {loading && (
+                <Grid size={12}>
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                        Cargando datos del clima...
+                    </div>
                 </Grid>
+            )}
 
-                {/* Indicadores */}
-                <Grid size={{ xs: 12, md: 3 }} >
+            {error && (
+                <Grid size={12}>
+                    <AlertUI
+                        description={`Error: ${error}`}
+                        variant="filled"
+                        severity="error"
+                    />
+                </Grid>
+            )}
 
-                    {dataFetcherOutput.data && (
+            {/* Indicadores - Solo se muestran si hay datos */}
+            {data && (
+                <>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <IndicatorUI
                             title='Temperatura (2m)'
-                            description={`${dataFetcherOutput.data.current.temperature_2m} ${dataFetcherOutput.data.current_units.temperature_2m}`}
+                            description={`${data.current.temperature_2m} ${data.current_units.temperature_2m}`}
                         />
-                    )}
-                </Grid>
+                    </Grid>
 
-                <Grid size={{ xs: 12, md: 3 }}>
-                    {/* IndicatorUI con la Temperatura aparente en °C' */}
-                    {dataFetcherOutput.data && (
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <IndicatorUI
-                            title='Temperatura (°C)'
-                            description={`${dataFetcherOutput.data.current.apparent_temperature} ${dataFetcherOutput.data.current_units.apparent_temperature}`}
+                            title='Temperatura aparente'
+                            description={`${data.current.apparent_temperature} ${data.current_units.apparent_temperature}`}
                         />
-                    )}
-                </Grid>
+                    </Grid>
 
-                <Grid size={{ xs: 12, md: 3 }}>
-                    {/* IndicatorUI con la Velocidad del viento en km/h' */}
-                    {dataFetcherOutput.data &&
-                        (<IndicatorUI
-                            title='Velocidad del viento en km/h'
-                            description={`${dataFetcherOutput.data.current.wind_speed_10m} ${dataFetcherOutput.data.current_units.wind_speed_10m}`}
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <IndicatorUI
+                            title='Velocidad del viento'
+                            description={`${data.current.wind_speed_10m} ${data.current_units.wind_speed_10m}`}
                         />
-                        )}
-                </Grid>
+                    </Grid>
 
-                <Grid size={{ xs: 12, md: 3 }}>
-                    {/* IndicatorUI con la Humedad relativa en %' */}
-                    {dataFetcherOutput.data &&
-                        (<IndicatorUI
-                            title='Humedad relativa en %'
-                            description={`${dataFetcherOutput.data.current.relative_humidity_2m} ${dataFetcherOutput.data.current_units.relative_humidity_2m}`}
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <IndicatorUI
+                            title='Humedad relativa'
+                            description={`${data.current.relative_humidity_2m} ${data.current_units.relative_humidity_2m}`}
                         />
-                        )}
-                </Grid>
+                    </Grid>
+                </>
+            )}
 
 
-                {/* Gráfico */}
-                <Grid container spacing={5} justifyContent="center" alignItems="center">Elemento: Gráfico</Grid>
+            {/* Gráfico */}
+            <Grid size={{ xs: 6, md: 6 }} sx={{ display: { xs: "none", md: "block" } }}>
+                <ChartUI />
+            </Grid>
 
-                {/* Tabla */}
-                <Grid container spacing={5} justifyContent="center" alignItems="center">Elemento: Tabla</Grid>
+            {/* Tabla */}
+            <Grid size={{ xs: 6, md: 6 }} sx={{ display: { xs: "none", md: "block" } }}>
+                <TableUI />
+            </Grid>
+            {/* Información adicional */}
+            <Grid container spacing={5} justifyContent="center" alignItems="center">Elemento: Información adicional</Grid>
 
-                {/* Información adicional */}
-                <Grid container spacing={5} justifyContent="center" alignItems="center">Elemento: Información adicional</Grid>
-
-            </Grid >
-            );
+        </Grid >
+    );
 }
 
-            export default App 
+export default App 
